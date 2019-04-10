@@ -22,37 +22,37 @@
 
 ## Summary
 
-When running within an organization it is beneficial to use your own, internally controlled, package repository. But that doesn't mean you have to create all packages from scratch. Chocolatey allows you to create packages easily using the [package builder](https://chocolatey.org/docs/features-create-packages-from-installers) but it also allows you to take packages from the Chocolatey Community Repository and recompile them for internal use - this is a process known as [package internalization](https://chocolatey.org/docs/features-automatically-recompile-packages). This guide shows you how to use that within your organization.
+When running within an organization it is beneficial to use your own, internally controlled, package repository. But that doesn't mean you have to create all packages from scratch. Chocolatey allows you to create packages easily using the [package builder](https://chocolatey.org/docs/features-create-packages-from-installers), but it also allows you to take packages from the Chocolatey Community Repository and recompile them for internal use - this is a process known as [package internalization](https://chocolatey.org/docs/features-automatically-recompile-packages). This guide shows you how to use that within your organization.
 
 ## Organizational Requirements
 
-When distributing software across your organization you need confidence and control of your package source. We do not recommend an organization use the [Chocolatey Community Repository](https://chocolatey.org "Chocolatey Community Repository") for the following reasons:
+When distributing software across your organization you need confidence and control of your package source. We do not recommend an organization use the [Chocolatey Community Repository](https://chocolatey.org "Chocolatey Community Repository") directly for the following reasons:
 
-* Trust.
+* **Trust**.
     When using packages within your organization you need to be sure that you can trust the creators and maintainers of those packages. While every package going through the Chocolatey Community Repository undergoes a [moderation process](https://github.com/chocolatey/choco/wiki/Moderation), the creators and maintainers are strangers to your organization.
-* Stability.
+* **Stability**.
     You need a stable and reliable connection to wherever your packages are stored and it needs to be always available during your business hours.
-* Control.
+* **Control**.
     To ensure the packages work in your environment you need to be in control of the testing, approval and release process.
 
-For these reasons, we do not recommend that organizations use the Chocolatey Community Repository as a package source and encourage replacing it with your own internal package source.
+For these reasons, we do not recommend that organizations use the Chocolatey Community Repository directly as a package source and encourage replacing it with your own internal package source.
 
 ### Architecture
 
-Chocolatey recommends you use an architecture that meets the [organizational requirements](#organizational-requirements) as we have shown below.
+Chocolatey recommends you use an architecture that meets the [organizational requirements](#organizational-requirements) we have shown below.
 
 ![Chocolatey Architecture Diagram](images/internalizer/architecture-diagram.png)
 
 Let's break down the diagram:
 
-1. Package Internalizer - The package internalizer downloads approved packages from the Chocolatey Community Repository and software binaries from their source locations.
-1. Source Control - once packages have been internalized we recommend they are stored in source control.
-1. Test 'Internal Package Repository' - once internalized by the Package Internalizer, packages are pushed to here for further processing such as being put through automated testing.
-1. Production 'Internal Package Repository' - after the package has been processing in the Test 'Internal Package Repository' it will be pushed to your production package source for release to your organization.
+1. **Package Internalizer** - downloads approved packages from the Chocolatey Community Repository and software binaries from their source locations.
+1. **Source Control** - once packages have been internalized we recommend they are stored in source control.
+1. **Test 'Internal Package Repository'** - once internalized by the Package Internalizer, packages are pushed here for further processing such as being put through automated testing.
+1. **Production 'Internal Package Repository'** - after the package has been processed in the Test 'Internal Package Repository' it will be pushed to your production package source for release to your organization.
 
-While it's not explicitly specified the glue that holds all of this together is automation using a self-hosted CI / CD tool such as [Jenkins](https://chocolatey.org/packages/jenkins), [GoCD](https://chocolatey.org/packages/gocdserver), [TeamCity](https://chocolatey.org/packages/teamcity) etc. While it may be possible to do this with externally hosted solutions using local build agents (such as [VSTS](https://visualstudio.microsoft.com/team-services/)) your mileage may vary.
+While it's not explicitly specified, the glue that holds all of this together is automation using a self-hosted CI / CD tool such as [Jenkins](https://chocolatey.org/packages/jenkins), [GoCD](https://chocolatey.org/packages/gocdserver), [TeamCity](https://chocolatey.org/packages/teamcity) etc. While it may be possible to do this with externally hosted solutions using local build agents (such as [VSTS](https://visualstudio.microsoft.com/team-services/)), your mileage may vary.
 
-**NOTE:** The Chocolatey Architecture Diagram shows the services separated. But don't mistake the services for servers. All of these services, package internalizer, source control and package repositories can all be run on one server. There is a caveat however. [Chocolatey Server](https://chocolatey.org/docs/how-to-set-up-chocolatey-server) can only run one package source per server, so if you use this with a test and production repository source, as we recommend, you will need to run each on separate servers. This limitation does not apply to [Sonatype Nexus](https://www.sonatype.com/nexus-repository-sonatype), [Artifactory](https://jfrog.com/artifactory/), [ProGet](https://inedo.com/proget) and others.
+**NOTE:** The Chocolatey Architecture Diagram shows the services separated. But don't mistake the services for servers. All of these services - package internalizer, source control and package repositories - can all be run on one server. There is a caveat however. [Chocolatey Server](https://chocolatey.org/docs/how-to-set-up-chocolatey-server) can only run one package source per server, so if you use this with a test and production repository source, as we recommend, you will need to run each on separate servers. This limitation does not apply to [Sonatype Nexus](https://www.sonatype.com/nexus-repository-sonatype), [Artifactory](https://jfrog.com/artifactory/), [ProGet](https://inedo.com/proget) and others.
 
 ## Building Your Internal Infrastructure
 
